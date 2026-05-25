@@ -2,37 +2,49 @@ name: AgroAI CI/CD
 
 on:
   push:
-    branches: [ "main" ]
+    branches:
+      - main
+
   pull_request:
-    branches: [ "main" ]
+    branches:
+      - main
 
 jobs:
   build-and-test:
+
     runs-on: ubuntu-latest
 
     steps:
-    - uses: actions/checkout@v3
 
-    - name: Set up Node.js
-      uses: actions/setup-node@v3
-      with:
-        node-version: '18'
+      # Checkout Repository
+      - name: Checkout Code
+        uses: actions/checkout@v4
 
-    - name: Install Backend Dependencies
-      run: |
-        cd backend
-        npm install
+      # Setup Node.js
+      - name: Setup Node.js
+        uses: actions/setup-node@v4
+        with:
+          node-version: 18
 
-    - name: Install Frontend Dependencies
-      run: |
-        cd frontend
-        npm install
+      # Install Backend Dependencies
+      - name: Install Backend Dependencies
+        working-directory: ./backend
+        run: npm install
 
-    - name: Build Frontend
-      run: |
-        cd frontend
-        npm run build
+      # Install Frontend Dependencies
+      - name: Install Frontend Dependencies
+        working-directory: ./frontend
+        run: npm install
 
-    - name: Build Docker Images
-      run: |
-        docker-compose build
+      # Build Frontend
+      - name: Build Frontend
+        working-directory: ./frontend
+        run: npm run build
+
+      # Build Docker Containers
+      - name: Build Docker Images
+        run: docker compose build
+
+      # Success Message
+      - name: CI Success
+        run: echo "GitHub Actions CI Pipeline Working Successfully"
